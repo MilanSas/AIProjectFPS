@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 114013889204372324}
   - component: {fileID: 114113478588845708}
   - component: {fileID: 114401900021918186}
-  - component: {fileID: 54990499567007742}
   m_Layer: 0
   m_Name: Projectile_Physics
   m_TagString: Untagged
@@ -92,7 +91,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   radius: 0.1
   root: {fileID: 7613009910963329218}
-  tip: {fileID: 0}
+  tip: {fileID: 3505190834258529575}
   maxLifeTime: 5
   impactVFX: {fileID: 1566276340984800312, guid: 89e6faa36ce35584496720af8ed0459e,
     type: 3}
@@ -103,7 +102,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   speed: 10
-  gravityDownAcceleration: 0
+  gravityDownAcceleration: 9.8
   trajectoryCorrectionDistance: -1
   inheritWeaponVelocity: 0
   damage: 1
@@ -132,41 +131,11 @@ MonoBehaviour:
     min: 10
     max: 50
   gravityDownAcceleration:
-    min: 0
-    max: 0
+    min: 9.8
+    max: 9.8
   areaOfEffectDistance:
     min: 0
     max: 0
---- !u!54 &54990499567007742
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2465950203287619678}
-  serializedVersion: 2
-  m_Mass: 10000000
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!64 &296700517122466411
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7613009910962898144}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 1
-  m_CookingOptions: 14
-  m_Mesh: {fileID: 4300000, guid: 06ed6cc6169693c43906db247e8806c5, type: 3}
 --- !u!1001 &7613009910962930242
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -243,12 +212,6 @@ PrefabInstance:
 --- !u!4 &7613009910963329218 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 06ed6cc6169693c43906db247e8806c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 7613009910962930242}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7613009910962898144 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 100002, guid: 06ed6cc6169693c43906db247e8806c5,
     type: 3}
   m_PrefabInstance: {fileID: 7613009910962930242}
   m_PrefabAsset: {fileID: 0}
