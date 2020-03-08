@@ -190,6 +190,15 @@ public class PlayerCharacterController : MonoBehaviour
         HandleCharacterMovement();
     }
 
+    public void setYLookAxis(float axis)
+    {
+        m_CameraVerticalAngle = axis;
+    }
+
+    public void setXLookAxis(float axis)
+    {
+        transform.rotation = Quaternion.Euler(0, axis, 0);
+    }
     void OnDie()
     {
         isDead = true;
@@ -235,7 +244,7 @@ public class PlayerCharacterController : MonoBehaviour
 
     void HandleCharacterMovement()
     {
-        // horizontal character rotation
+        //horizontal character rotation
         {
             // rotate the transform with the input speed around its local Y axis
             transform.Rotate(new Vector3(0f, (m_InputHandler.GetLookInputsHorizontal() * rotationSpeed * RotationMultiplier), 0f), Space.Self);
