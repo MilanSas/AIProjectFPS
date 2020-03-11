@@ -31,6 +31,8 @@ public class ObjectControllerScript : MonoBehaviour
     {
         player.setXLookAxis(xAxis);
         player.setYLookAxis(yAxis);
+        playerPosition = player.transform.position;
+        targetPosition = target.transform.position;
         activeWeapon = playerWeapon.GetActiveWeapon();
         _chargeTime = activeWeapon.maxChargeDuration * chargePercentage;
 
