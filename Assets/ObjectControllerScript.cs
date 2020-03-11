@@ -22,9 +22,7 @@ public class ObjectControllerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        activeWeapon = playerWeapon.GetActiveWeapon();
-        Debug.Log(activeWeapon.maxChargeDuration);
-        
+        Debug.Log(activeWeapon.maxChargeDuration);   
         _nextCharge = 1.0f;
     }
 
@@ -33,7 +31,7 @@ public class ObjectControllerScript : MonoBehaviour
     {
         player.setXLookAxis(xAxis);
         player.setYLookAxis(yAxis);
-
+        activeWeapon = playerWeapon.GetActiveWeapon();
         _chargeTime = activeWeapon.maxChargeDuration * chargePercentage;
 
         Debug.Log("Time " + Time.time + " NextCharge " + _nextCharge);
