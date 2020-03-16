@@ -7,18 +7,18 @@ public class ObjectControllerScript : MonoBehaviour
     public TargetHitboxScript target;
     public PlayerCharacterController player;
     public PlayerWeaponsManager playerWeapon;
-    public Vector3 playerPosition;
-    public Vector3 targetPosition;
+    public Vector3 playerPosition = new Vector3(0, 1.5f, 0);
+    public Vector3 targetPosition = new Vector3(0, 15, 37.50f);
     private WeaponController activeWeapon;
     private float _nextRelease = 0.0f;
     private float _nextCharge = 0.0f;
-    public float chargePercentage = 0.5f;
+    public float chargePercentage = 0.4f;
     private float _chargeTime;
     private float _shotDelay = 1.0f;
     private bool _isCharging = false;
     private bool _hasFired;
-    public float xAxis = 5;
-    public float yAxis = -45; 
+    public float xAxis = 0;
+    public float yAxis = -37.5f; 
     // Start is called before the first frame update
     void Start()
     {
@@ -31,8 +31,14 @@ public class ObjectControllerScript : MonoBehaviour
     {
         player.setXLookAxis(xAxis);
         player.setYLookAxis(yAxis);
-        playerPosition = player.transform.position;
-        targetPosition = target.transform.position;
+        if (targetPosition != null)
+        {
+            target.SetPosition(targetPosition);
+        }
+        if (playerPosition != null)
+        {
+            player.SetPosition(playerPosition);
+        }
         activeWeapon = playerWeapon.GetActiveWeapon();
         _chargeTime = activeWeapon.maxChargeDuration * chargePercentage;
 

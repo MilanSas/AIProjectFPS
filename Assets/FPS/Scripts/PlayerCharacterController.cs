@@ -199,6 +199,11 @@ public class PlayerCharacterController : MonoBehaviour
     {
         transform.rotation = Quaternion.Euler(0, axis, 0);
     }
+
+    public void SetPosition(Vector3 newPosition)
+    {
+        playerCamera.transform.position = newPosition;
+    }
     void OnDie()
     {
         isDead = true;

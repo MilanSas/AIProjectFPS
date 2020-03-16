@@ -479,17 +479,37 @@ PrefabInstance:
     - target: {fileID: 1695080762756862011, guid: b8b5e598e463497468a518a4223ff853,
         type: 3}
       propertyPath: chargePercentage
-      value: 0.3
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 1695080762756862011, guid: b8b5e598e463497468a518a4223ff853,
         type: 3}
       propertyPath: xAxis
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1695080762756862011, guid: b8b5e598e463497468a518a4223ff853,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1695080762756862011, guid: b8b5e598e463497468a518a4223ff853,
+        type: 3}
+      propertyPath: targetPosition.y
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1695080762756862011, guid: b8b5e598e463497468a518a4223ff853,
+        type: 3}
+      propertyPath: targetPosition.z
+      value: 37.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1695080762756862011, guid: b8b5e598e463497468a518a4223ff853,
+        type: 3}
+      propertyPath: playerPosition.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1695080762756862011, guid: b8b5e598e463497468a518a4223ff853,
+        type: 3}
+      propertyPath: yAxis
+      value: -37.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8b5e598e463497468a518a4223ff853, type: 3}

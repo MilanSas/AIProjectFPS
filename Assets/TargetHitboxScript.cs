@@ -41,4 +41,9 @@ public class TargetHitboxScript : MonoBehaviour
     {
         return lastScore;
     }
+
+    public void SetPosition(Vector3 newPosition)
+    {
+        transform.position = newPosition;
+    }
 }
