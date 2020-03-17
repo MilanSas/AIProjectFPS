@@ -109,6 +109,7 @@ MonoBehaviour:
   areaOfDamage: {fileID: 0}
   radiusColor: {r: 0, g: 0.2, b: 0.2, a: 0.2}
   m_Velocity: {x: 0, y: 0, z: 0}
+  target: {fileID: 0}
 --- !u!114 &114401900021918186
 MonoBehaviour:
   m_ObjectHideFlags: 0

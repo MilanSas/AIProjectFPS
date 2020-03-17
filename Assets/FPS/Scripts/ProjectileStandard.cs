@@ -52,6 +52,8 @@ public class ProjectileStandard : MonoBehaviour
     Vector3 m_TrajectoryCorrectionVector;
     Vector3 m_ConsumedTrajectoryCorrectionVector;
     List<Collider> m_IgnoredColliders;
+    private TargetHitboxScript target;
+    private bool _isMiss = false;
 
     const QueryTriggerInteraction k_TriggerInteraction = QueryTriggerInteraction.Collide;
 
@@ -113,6 +115,15 @@ public class ProjectileStandard : MonoBehaviour
         if (inheritWeaponVelocity)
         {
             transform.position += m_ProjectileBase.inheritedMuzzleVelocity * Time.deltaTime;
+        }
+        // Check if misses target
+        target = FindObjectOfType<TargetHitboxScript>();
+        if(transform.position.z > target.transform.position.z && !_isMiss)
+        {
+            Debug.Log(transform.position.z);
+            Debug.Log(target.transform.position.z);
+            target.UpdateScore(-20);
+            _isMiss = true;
         }
 
         // Drift towards trajectory override (this is so that projectiles can be centered 
