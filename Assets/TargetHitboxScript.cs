@@ -37,6 +37,11 @@ public class TargetHitboxScript : MonoBehaviour
         return totalScore;
     }
 
+    public int ResetScore()
+    {
+        totalScore = 0;
+        return totalScore;
+    } 
     public string GetLastScore()
     {
         return lastScore;
