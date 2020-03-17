@@ -302,10 +302,55 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2688805939458027187, guid: 8afd189f9a24b8b47a7d1e143911df57,
+        type: 3}
+      propertyPath: m_TagString
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3236182788994904363, guid: 8afd189f9a24b8b47a7d1e143911df57,
+        type: 3}
+      propertyPath: m_TagString
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3992981250869613750, guid: 8afd189f9a24b8b47a7d1e143911df57,
+        type: 3}
+      propertyPath: m_TagString
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5646149309787277853, guid: 8afd189f9a24b8b47a7d1e143911df57,
+        type: 3}
+      propertyPath: m_TagString
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5702426792580773923, guid: 8afd189f9a24b8b47a7d1e143911df57,
+        type: 3}
+      propertyPath: m_TagString
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 5840373152519587042, guid: 8afd189f9a24b8b47a7d1e143911df57,
         type: 3}
       propertyPath: m_Name
       value: Target
+      objectReference: {fileID: 0}
+    - target: {fileID: 6483038081632210166, guid: 8afd189f9a24b8b47a7d1e143911df57,
+        type: 3}
+      propertyPath: m_TagString
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211234355773686398, guid: 8afd189f9a24b8b47a7d1e143911df57,
+        type: 3}
+      propertyPath: m_TagString
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8193991705240067176, guid: 8afd189f9a24b8b47a7d1e143911df57,
+        type: 3}
+      propertyPath: m_TagString
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8895457613934592755, guid: 8afd189f9a24b8b47a7d1e143911df57,
+        type: 3}
+      propertyPath: m_TagString
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 9106966683343927627, guid: 8afd189f9a24b8b47a7d1e143911df57,
         type: 3}

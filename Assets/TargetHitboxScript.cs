@@ -6,6 +6,7 @@ public class TargetHitboxScript : MonoBehaviour
 {
     private int totalScore = 0;
     private string lastScore = "";
+    private int[] scoreArray = { 10, 8, 6, 4, 2, -2, -4, -6, -8, -10, -20 };
     // Start is called before the first frame update
     void Start()
     {
@@ -18,8 +19,10 @@ public class TargetHitboxScript : MonoBehaviour
         
     }
 
-    public void UpdateScore(int score)
+    public void UpdateScore(int scorePosition)
     {
+        int score = scoreArray[scorePosition -1];
+
         if (score > 0)
         {
             lastScore = "+" + score.ToString();

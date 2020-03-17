@@ -122,7 +122,7 @@ public class ProjectileStandard : MonoBehaviour
         {
             Debug.Log(transform.position.z);
             Debug.Log(target.transform.position.z);
-            target.UpdateScore(-20);
+            target.UpdateScore(11);
             _isMiss = true;
         }
 
