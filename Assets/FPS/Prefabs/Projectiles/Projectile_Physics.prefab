@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2323985019839306172}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.391}
+  m_LocalPosition: {x: 0, y: 0, z: 0.127}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2947087411455858579}
@@ -101,15 +101,14 @@ MonoBehaviour:
   hittableLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  speed: 10
-  gravityDownAcceleration: 9.8
+  speed: 50
+  gravityDownAcceleration: 0
   trajectoryCorrectionDistance: -1
   inheritWeaponVelocity: 0
   damage: 1
   areaOfDamage: {fileID: 0}
   radiusColor: {r: 0, g: 0.2, b: 0.2, a: 0.2}
   m_Velocity: {x: 0, y: 0, z: 0}
-  target: {fileID: 0}
 --- !u!114 &114401900021918186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,11 +128,11 @@ MonoBehaviour:
     min: 1
     max: 1
   speed:
-    min: 10
-    max: 50
+    min: 1000
+    max: 1000
   gravityDownAcceleration:
-    min: 9.8
-    max: 9.8
+    min: 0
+    max: 0
   areaOfEffectDistance:
     min: 0
     max: 0

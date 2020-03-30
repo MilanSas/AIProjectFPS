@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+using MLAgents;
+using MLAgents.Sensor;
 
 [RequireComponent(typeof(CharacterController), typeof(PlayerInputHandler), typeof(AudioSource))]
-public class PlayerCharacterController : MonoBehaviour
+public class PlayerCharacterController : Agent
 {
     [Header("References")]
     [Tooltip("Reference to the main camera used for the player")]
@@ -111,12 +113,29 @@ public class PlayerCharacterController : MonoBehaviour
     Vector3 m_CharacterVelocity;
     Vector3 m_LatestImpactSpeed;
     float m_LastTimeJumped = 0f;
-    float m_CameraVerticalAngle = 0f;
+    float m_CameraVerticalAngle;
     float m_footstepDistanceCounter;
     float m_TargetCharacterHeight;
 
     const float k_JumpGroundingPreventionTime = 0.2f;
     const float k_GroundCheckDistanceInAir = 0.07f;
+
+    public TargetHitboxScript target;
+    public Vector3 playerPosition = new Vector3(0, 1.5f, 0);
+    public Vector3 targetPosition = new Vector3(0, 15, 37.50f);
+    public Vector2 windDirection;
+    public float windIntensity;
+    public float chargePercentage = 0.5f;
+    private WeaponController activeWeapon;
+    private float _nextRelease = 0.0f;
+    private float _nextCharge = 1.0f;
+    private float _chargeTime;
+    private float _shotDelay = 1.0f;
+    private bool _isCharging = false;
+    private bool _hasFired;
+    private int _score;
+    [SerializeField]
+    private bool _isFire;
 
     void Start()
     {
@@ -145,59 +164,162 @@ public class PlayerCharacterController : MonoBehaviour
         UpdateCharacterHeight(true);
     }
 
-    void Update()
+    //void Update()
+    //{
+    //    // check for Y kill
+    //    if(!isDead && transform.position.y < killHeight)
+    //    {
+    //        m_Health.Kill();
+    //    }
+
+    //    hasJumpedThisFrame = false;
+
+    //    bool wasGrounded = isGrounded;
+    //    GroundCheck();
+
+    //    // landing
+    //    if (isGrounded && !wasGrounded)
+    //    {
+    //        // Fall damage
+    //        float fallSpeed = -Mathf.Min(characterVelocity.y, m_LatestImpactSpeed.y);
+    //        float fallSpeedRatio = (fallSpeed - minSpeedForFallDamage) / (maxSpeedForFallDamage - minSpeedForFallDamage);
+    //        if (recievesFallDamage && fallSpeedRatio > 0f)
+    //        {
+    //            float dmgFromFall = Mathf.Lerp(fallDamageAtMinSpeed, fallDamageAtMaxSpeed, fallSpeedRatio);
+    //            m_Health.TakeDamage(dmgFromFall, null);
+
+    //            // fall damage SFX
+    //            audioSource.PlayOneShot(fallDamageSFX);
+    //        }
+    //        else
+    //        {
+    //            // land SFX
+    //            audioSource.PlayOneShot(landSFX);
+    //        }
+    //    }
+
+    //    // crouching
+    //    if (m_InputHandler.GetCrouchInputDown())
+    //    {
+    //        SetCrouchingState(!isCrouching, false);
+    //    }
+
+    //    UpdateCharacterHeight(false);
+
+    //    HandleCharacterMovement();
+    //}
+
+    public override void AgentReset()
     {
-        // check for Y kill
-        if(!isDead && transform.position.y < killHeight)
-        {
-            m_Health.Kill();
-        }
-
-        hasJumpedThisFrame = false;
-
-        bool wasGrounded = isGrounded;
-        GroundCheck();
-
-        // landing
-        if (isGrounded && !wasGrounded)
-        {
-            // Fall damage
-            float fallSpeed = -Mathf.Min(characterVelocity.y, m_LatestImpactSpeed.y);
-            float fallSpeedRatio = (fallSpeed - minSpeedForFallDamage) / (maxSpeedForFallDamage - minSpeedForFallDamage);
-            if (recievesFallDamage && fallSpeedRatio > 0f)
-            {
-                float dmgFromFall = Mathf.Lerp(fallDamageAtMinSpeed, fallDamageAtMaxSpeed, fallSpeedRatio);
-                m_Health.TakeDamage(dmgFromFall, null);
-
-                // fall damage SFX
-                audioSource.PlayOneShot(fallDamageSFX);
-            }
-            else
-            {
-                // land SFX
-                audioSource.PlayOneShot(landSFX);
-            }
-        }
-
-        // crouching
-        if (m_InputHandler.GetCrouchInputDown())
-        {
-            SetCrouchingState(!isCrouching, false);
-        }
-
-        UpdateCharacterHeight(false);
-
-        HandleCharacterMovement();
+        setXLookAxis(0);
+        setYLookAxis(0);
+        target.SetPosition(new Vector3(Random.Range(-25.0f, 25.0f), 10.32f, 25));
+        target.ResetScore();
     }
 
-    public void setYLookAxis(float axis)
+    public override void CollectObservations()
+    {
+        // Target and Agent positions
+        AddVectorObs((this.transform.rotation.eulerAngles / 360.0f));
+        Debug.Log((this.transform.rotation.eulerAngles / 360f));
+        Debug.Log((playerCamera.transform.rotation.eulerAngles / 360f));
+        AddVectorObs((playerCamera.transform.rotation.eulerAngles/360f));
+        AddVectorObs(target.transform.position);
+        AddVectorObs(this.transform.position);
+        AddVectorObs((this.transform.position.x - target.transform.position.x));
+        AddVectorObs((this.transform.position.y - target.transform.position.y));
+        AddVectorObs((this.transform.position.z - target.transform.position.z));
+   
+
+    }
+    public override void AgentAction(float[] vectorAction)
+    {
+        //Actions, size = 2
+        transform.Rotate(new Vector3(0f, ((vectorAction[0]/1000) * rotationSpeed * RotationMultiplier), 0f), Space.Self);
+        m_CameraVerticalAngle += (vectorAction[1]/1000) * rotationSpeed * RotationMultiplier;
+        m_CameraVerticalAngle = Mathf.Clamp(m_CameraVerticalAngle, -89f, 89f);
+
+        // apply the vertical angle as a local rotation to the camera transform along its right axis (makes it pivot up and down)
+        playerCamera.transform.localEulerAngles = new Vector3(m_CameraVerticalAngle, 0, 0);
+
+        //setXLookAxis(vectorAction[0]);
+        //setYLookAxis(vectorAction[1]);
+
+
+        activeWeapon = m_WeaponsManager.GetActiveWeapon();
+        activeWeapon.HandleShootInputs(false, true, false);
+        //_chargeTime = activeWeapon.maxChargeDuration * 0.5f;
+
+        //if (!_isCharging && Time.time > _nextCharge)
+        //{
+        //    _hasFired = activeWeapon.HandleShootInputs(false, true, false);
+        //    _nextRelease = Time.time + _chargeTime;
+        //    _isCharging = true;
+        //}
+
+        //else if (_isCharging && !_hasFired && Time.time > _nextRelease)
+        //{
+        //    _hasFired = activeWeapon.HandleShootInputs(false, false, true);
+        //    _nextRelease = Time.time + _chargeTime;
+        //    _nextCharge = Time.time + _shotDelay;
+        //    _isCharging = false;
+        //    //_isFire = false;
+
+        //}
+
+        
+
+
+        // Rewards
+        float targetPoints = target.GetLastScoreINT(); //Vector3.Distance(this.transform.position,Target.position);
+
+        // Reached target
+        if (targetPoints >= 1)
+        {
+            AddReward(1.0f);
+            Done();
+        }
+
+        if(targetPoints < 0)
+        {
+            AddReward(-0.001f);
+        }
+
+
+        //Fell off platform
+        if (this.transform.rotation.eulerAngles.y > 90 && this.transform.rotation.eulerAngles.y < 270)
+        {
+            SetReward(-1.0f);
+            Done();
+        }
+
+        if (m_CameraVerticalAngle > 80 | m_CameraVerticalAngle< -80)
+        {
+            SetReward(-1.0f);
+            Done();
+        }
+    }
+
+    public override float[] Heuristic()
+    {
+        var action = new float[2];
+        action[0] = m_InputHandler.GetLookInputsHorizontal()*1000;
+        action[1] = m_InputHandler.GetLookInputsVertical()*1000;
+        //charge time
+        //action[2] = m_InputHandler.GetLookInputsVertical();
+        return action;
+    }
+
+    public float setYLookAxis(float axis)
     {
         m_CameraVerticalAngle = axis;
+        return m_CameraVerticalAngle;
     }
 
-    public void setXLookAxis(float axis)
+    public float setXLookAxis(float axis)
     {
         transform.rotation = Quaternion.Euler(0, axis, 0);
+        return axis;
     }
 
     public void SetPosition(Vector3 newPosition)

@@ -16,7 +16,7 @@ public class ObjectControllerScript : MonoBehaviour
     public float yAxis = -37.5f;
     private WeaponController activeWeapon;
     private float _nextRelease = 0.0f;
-    private float _nextCharge = 0.0f;
+    private float _nextCharge = 1.0f;
     private float _chargeTime;
     private float _shotDelay = 1.0f;
     private bool _isCharging = false;

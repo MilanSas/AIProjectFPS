@@ -230,6 +230,11 @@ public class ProjectileStandard : MonoBehaviour
                 cylinder.OnHit();
             }
 
+            else
+            {
+                target.UpdateScore(11);
+            }
+
 
             Damageable damageable = collider.GetComponent<Damageable>();
             if (damageable)
