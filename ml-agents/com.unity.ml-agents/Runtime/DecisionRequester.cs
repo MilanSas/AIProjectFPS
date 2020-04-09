@@ -12,7 +12,7 @@ namespace MLAgents
     {
         [Range(1, 20)]
         [Tooltip("The agent will automatically request a decision every X Academy steps.")]
-        public int DecisionPeriod = 5;
+        public int DecisionPeriod = 10;
 
         [Tooltip("Whether or not AgentAction will be called on Academy steps that decisions aren't requested. Has no effect if DecisionPeriod is 1.")]
         public bool RepeatAction = true;

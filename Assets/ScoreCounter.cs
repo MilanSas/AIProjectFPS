@@ -6,18 +6,41 @@ using TMPro;
 public class ScoreCounter : MonoBehaviour
 {
     public TextMeshProUGUI uiText;
-    private TargetHitboxScript target;
+    private PlayerCharacterController player;
     public GameObject otherGameObject;
+    private float previousDistance = float.MaxValue;
 
     private void Awake()
     {
-        target = otherGameObject.GetComponent<TargetHitboxScript>();
+        player = otherGameObject.GetComponent<PlayerCharacterController>();
     }
 
     void Update()
     {
-        string lastScore = target.GetLastScore();
-        int score = target.GetScore();
-        uiText.text = lastScore + " Total: "+ score.ToString();
+        var mousePos = Input.mousePosition;
+        var targetWorldPosition = Camera.main.WorldToScreenPoint(player.target.transform.position);
+        float distance = (Input.mousePosition -Camera.main.WorldToScreenPoint(player.target.transform.position)).magnitude;
+        Vector3 relativePosition = mousePos - targetWorldPosition;
+        float relativeY = relativePosition.y;
+        float relativeX = relativePosition.x;
+
+
+        if (distance < 60)
+        {
+            uiText.text += "< 60";
+        }
+        else
+        {
+            uiText.text = "Mousepos " + mousePos;
+            uiText.text += "targetpos " + targetWorldPosition;
+            uiText.text += "distance MT " + distance;
+            uiText.text += "Relative X " + relativeX;
+            uiText.text += "Relatvie Y " + relativeY;
+
+        }
+
+     
+
+
     }
 }

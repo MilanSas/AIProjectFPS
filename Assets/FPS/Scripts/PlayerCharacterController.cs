@@ -116,6 +116,7 @@ public class PlayerCharacterController : Agent
     float m_CameraVerticalAngle;
     float m_footstepDistanceCounter;
     float m_TargetCharacterHeight;
+    private float previousDistance = float.MaxValue;
 
     const float k_JumpGroundingPreventionTime = 0.2f;
     const float k_GroundCheckDistanceInAir = 0.07f;
@@ -137,6 +138,10 @@ public class PlayerCharacterController : Agent
     [SerializeField]
     private bool _isFire;
 
+
+    private Vector3 mousePos;
+    private Vector3 targetScreenPos;
+    private float distanceMouseTarget;
     void Start()
     {
         // fetch components on the same gameObject
@@ -159,55 +164,13 @@ public class PlayerCharacterController : Agent
 
         m_Health.onDie += OnDie;
 
+        mousePos = Input.mousePosition;
+        targetScreenPos = Camera.main.WorldToScreenPoint(target.transform.position);
+        distanceMouseTarget = (Input.mousePosition - Camera.main.WorldToScreenPoint(target.transform.position)).magnitude;
         // force the crouch state to false when starting
         SetCrouchingState(false, true);
         UpdateCharacterHeight(true);
     }
-
-    //void Update()
-    //{
-    //    // check for Y kill
-    //    if(!isDead && transform.position.y < killHeight)
-    //    {
-    //        m_Health.Kill();
-    //    }
-
-    //    hasJumpedThisFrame = false;
-
-    //    bool wasGrounded = isGrounded;
-    //    GroundCheck();
-
-    //    // landing
-    //    if (isGrounded && !wasGrounded)
-    //    {
-    //        // Fall damage
-    //        float fallSpeed = -Mathf.Min(characterVelocity.y, m_LatestImpactSpeed.y);
-    //        float fallSpeedRatio = (fallSpeed - minSpeedForFallDamage) / (maxSpeedForFallDamage - minSpeedForFallDamage);
-    //        if (recievesFallDamage && fallSpeedRatio > 0f)
-    //        {
-    //            float dmgFromFall = Mathf.Lerp(fallDamageAtMinSpeed, fallDamageAtMaxSpeed, fallSpeedRatio);
-    //            m_Health.TakeDamage(dmgFromFall, null);
-
-    //            // fall damage SFX
-    //            audioSource.PlayOneShot(fallDamageSFX);
-    //        }
-    //        else
-    //        {
-    //            // land SFX
-    //            audioSource.PlayOneShot(landSFX);
-    //        }
-    //    }
-
-    //    // crouching
-    //    if (m_InputHandler.GetCrouchInputDown())
-    //    {
-    //        SetCrouchingState(!isCrouching, false);
-    //    }
-
-    //    UpdateCharacterHeight(false);
-
-    //    HandleCharacterMovement();
-    //}
 
     public override void AgentReset()
     {
@@ -219,24 +182,46 @@ public class PlayerCharacterController : Agent
 
     public override void CollectObservations()
     {
-        // Target and Agent positions
-        AddVectorObs((this.transform.rotation.eulerAngles / 360.0f));
-        Debug.Log((this.transform.rotation.eulerAngles / 360f));
-        Debug.Log((playerCamera.transform.rotation.eulerAngles / 360f));
-        AddVectorObs((playerCamera.transform.rotation.eulerAngles/360f));
-        AddVectorObs(target.transform.position);
-        AddVectorObs(this.transform.position);
-        AddVectorObs((this.transform.position.x - target.transform.position.x));
-        AddVectorObs((this.transform.position.y - target.transform.position.y));
-        AddVectorObs((this.transform.position.z - target.transform.position.z));
-   
+        Vector3 relativePosition = targetScreenPos - mousePos;
+
+        AddVectorObs(relativePosition.x);
+        AddVectorObs(relativePosition.y);
+        AddVectorObs(targetScreenPos.x);
+        AddVectorObs(targetScreenPos.y);
+
 
     }
     public override void AgentAction(float[] vectorAction)
     {
+
+
+        //RaycastHit hit;
+        //Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
+
+        //if (Physics.Raycast(ray, out hit))
+        //{
+        //    Collider objectHit = hit.collider;
+        //    CylinderHitboxScript cylinder = objectHit.GetComponent<CylinderHitboxScript>();
+
+        //    if (cylinder)
+        //    {
+        //        cylinder.OnHit();
+        //    }
+
+        //    else
+        //    {
+        //        target.UpdateScore(11);
+        //    }
+
+
+        //    // Do something with the object that was hit by the raycast.
+        //}
+        Debug.Log("Vector "+ vectorAction[0]);
+        Debug.Log("Vector "+ vectorAction[1]);
+
         //Actions, size = 2
-        transform.Rotate(new Vector3(0f, ((vectorAction[0]/1000) * rotationSpeed * RotationMultiplier), 0f), Space.Self);
-        m_CameraVerticalAngle += (vectorAction[1]/1000) * rotationSpeed * RotationMultiplier;
+        transform.Rotate(new Vector3(0f, vectorAction[0], 0f), Space.Self);
+        m_CameraVerticalAngle += vectorAction[1];
         m_CameraVerticalAngle = Mathf.Clamp(m_CameraVerticalAngle, -89f, 89f);
 
         // apply the vertical angle as a local rotation to the camera transform along its right axis (makes it pivot up and down)
@@ -247,7 +232,7 @@ public class PlayerCharacterController : Agent
 
 
         activeWeapon = m_WeaponsManager.GetActiveWeapon();
-        activeWeapon.HandleShootInputs(false, true, false);
+        activeWeapon.HandleShootInputs(false, false, false);
         //_chargeTime = activeWeapon.maxChargeDuration * 0.5f;
 
         //if (!_isCharging && Time.time > _nextCharge)
@@ -267,35 +252,59 @@ public class PlayerCharacterController : Agent
 
         //}
 
-        
+
+        //Calculate vectors 
 
 
-        // Rewards
-        float targetPoints = target.GetLastScoreINT(); //Vector3.Distance(this.transform.position,Target.position);
+        mousePos = Input.mousePosition;
+        targetScreenPos = Camera.main.WorldToScreenPoint(target.transform.position);
+        distanceMouseTarget = (Input.mousePosition - Camera.main.WorldToScreenPoint(target.transform.position)).magnitude;
+        Vector3 relativePosition = targetScreenPos - mousePos;
 
-        // Reached target
-        if (targetPoints >= 1)
+
+
+        //rewards
+        if (relativePosition.x > -50 && relativePosition.x < 50f && relativePosition.y > -50f && relativePosition.y < 50F)
         {
-            AddReward(1.0f);
+            AddReward(10.0f);
             Done();
         }
 
-        if(targetPoints < 0)
+        if (distanceMouseTarget < previousDistance)
         {
-            AddReward(-0.001f);
+            AddReward(0.01f);
+            previousDistance = distanceMouseTarget;
         }
+        // Time penalty
+        AddReward(-0.05f);
+
+
+        //// Rewards
+        //float targetPoints = target.GetLastScoreINT(); //Vector3.Distance(this.transform.position,Target.position);
+
+        //// Reached target
+        //if (targetPoints >= 21)
+        //{
+        //    AddReward(1.0f);
+        //    Done();
+        //}
+
+        //if(targetPoints < 0)
+        //{
+        //    AddReward(-0.001f);
+        //}
 
 
         //Fell off platform
         if (this.transform.rotation.eulerAngles.y > 90 && this.transform.rotation.eulerAngles.y < 270)
         {
-            SetReward(-1.0f);
+            AddReward(-30.0f);
             Done();
         }
 
         if (m_CameraVerticalAngle > 80 | m_CameraVerticalAngle< -80)
         {
-            SetReward(-1.0f);
+            AddReward(-30.0f);
             Done();
         }
     }
@@ -303,8 +312,8 @@ public class PlayerCharacterController : Agent
     public override float[] Heuristic()
     {
         var action = new float[2];
-        action[0] = m_InputHandler.GetLookInputsHorizontal()*1000;
-        action[1] = m_InputHandler.GetLookInputsVertical()*1000;
+        action[0] = Input.GetAxis("Horizontal");
+        action[1] = Input.GetAxis("Vertical");
         //charge time
         //action[2] = m_InputHandler.GetLookInputsVertical();
         return action;
