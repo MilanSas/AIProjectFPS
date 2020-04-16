@@ -231,8 +231,8 @@ public class PlayerCharacterController : Agent
         //setYLookAxis(vectorAction[1]);
 
 
-        activeWeapon = m_WeaponsManager.GetActiveWeapon();
-        activeWeapon.HandleShootInputs(false, false, false);
+        //activeWeapon = m_WeaponsManager.GetActiveWeapon();
+        //activeWeapon.HandleShootInputs(false, false, false);
         //_chargeTime = activeWeapon.maxChargeDuration * 0.5f;
 
         //if (!_isCharging && Time.time > _nextCharge)

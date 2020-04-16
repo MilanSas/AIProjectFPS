@@ -34,7 +34,8 @@ public class TargetHitboxScript : MonoBehaviour
         }
         
         totalScore += score;
-        Debug.Log(totalScore);
+        Debug.Log("Target Score " + score);
+        Debug.Log("Target TotalScore " + totalScore);
     }
 
     public int GetScore()

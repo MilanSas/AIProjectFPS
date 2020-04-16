@@ -18,7 +18,6 @@ public class CylinderHitboxScript : MonoBehaviour
 
     public void OnHit()
     {
-        Debug.Log(this.gameObject.tag);
         TargetHitboxScript target = gameObject.GetComponentInParent(typeof(TargetHitboxScript)) as TargetHitboxScript;
         int score = int.Parse(this.gameObject.tag);
         target.UpdateScore(score);

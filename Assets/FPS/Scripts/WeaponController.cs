@@ -199,6 +199,7 @@ public class WeaponController : MonoBehaviour
 
     public bool HandleShootInputs(bool inputDown, bool inputHeld, bool inputUp)
     {
+        Debug.Log("Shooting");
         switch (shootType)
         {
             case WeaponShootType.Manual:
@@ -211,6 +212,7 @@ public class WeaponController : MonoBehaviour
             case WeaponShootType.Automatic:
                 if (inputHeld)
                 {
+                    Debug.Log("auto");
                     return TryShoot();
                 }
                 return false;
@@ -236,6 +238,7 @@ public class WeaponController : MonoBehaviour
         if (m_CurrentAmmo >= 1f 
             && m_LastTimeShot + delayBetweenShots < Time.time)
         {
+            Debug.Log("Try Shoot");
             HandleShoot();
             m_CurrentAmmo -= 1;
 
