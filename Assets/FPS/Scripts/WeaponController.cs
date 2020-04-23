@@ -152,6 +152,8 @@ public class WeaponController : MonoBehaviour
     {
         if (isCharging)
         {
+            Debug.Log("Update charging");
+            Debug.Log("Current charge " + currentCharge);
             if (currentCharge < 1f)
             {
                 float chargeLeft = 1f - currentCharge;
@@ -199,7 +201,6 @@ public class WeaponController : MonoBehaviour
 
     public bool HandleShootInputs(bool inputDown, bool inputHeld, bool inputUp)
     {
-        Debug.Log("Shooting");
         switch (shootType)
         {
             case WeaponShootType.Manual:
@@ -212,7 +213,6 @@ public class WeaponController : MonoBehaviour
             case WeaponShootType.Automatic:
                 if (inputHeld)
                 {
-                    Debug.Log("auto");
                     return TryShoot();
                 }
                 return false;
@@ -235,10 +235,9 @@ public class WeaponController : MonoBehaviour
 
     bool TryShoot()
     {
-        if (m_CurrentAmmo >= 1f 
+        if (m_CurrentAmmo >= 1f
             && m_LastTimeShot + delayBetweenShots < Time.time)
         {
-            Debug.Log("Try Shoot");
             HandleShoot();
             m_CurrentAmmo -= 1;
 
@@ -250,11 +249,12 @@ public class WeaponController : MonoBehaviour
 
     bool TryBeginCharge()
     {
-        if (!isCharging 
-            && m_CurrentAmmo >= ammoUsedOnStartCharge 
+        if (!isCharging
+            && m_CurrentAmmo >= ammoUsedOnStartCharge
             && m_LastTimeShot + delayBetweenShots < Time.time)
         {
-            UseAmmo(ammoUsedOnStartCharge); 
+            Debug.Log("Try begin charge");
+            UseAmmo(ammoUsedOnStartCharge);
             isCharging = true;
 
             return true;
@@ -267,11 +267,12 @@ public class WeaponController : MonoBehaviour
     {
         if (isCharging)
         {
+            Debug.Log("Try release charge");
             HandleShoot();
 
             currentCharge = 0f;
             isCharging = false;
-
+            Debug.Log("is charging release: " + isCharging);
             return true;
         }
         return false;

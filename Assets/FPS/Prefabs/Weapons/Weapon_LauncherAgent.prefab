@@ -482,6 +482,7 @@ GameObject:
   - component: {fileID: 7660685979840269767}
   - component: {fileID: 5826026373447907951}
   - component: {fileID: 3265718569471807551}
+  - component: {fileID: 411140614}
   m_Layer: 10
   m_Name: Weapon_LauncherAgent
   m_TagString: Untagged
@@ -529,7 +530,7 @@ MonoBehaviour:
     crosshairColor: {r: 0.4209304, g: 1, b: 0.32549024, a: 1}
   weaponRoot: {fileID: 8990988923412634488}
   weaponMuzzle: {fileID: 6751840487846256011}
-  shootType: 1
+  shootType: 2
   projectilePrefab: {fileID: 114013889204372324, guid: 8f03be78414acab47a2c29e99d3470a4,
     type: 3}
   delayBetweenShots: 0
@@ -784,9 +785,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 1
+    vectorObservationSize: 9
     numStackedVectorObservations: 1
-    vectorActionSize: 01000000
+    vectorActionSize: 0500000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
   m_Model: {fileID: 0}
@@ -810,8 +811,23 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 0
+  maxStep: 1000
   m_Target: {fileID: 0}
+--- !u!114 &411140614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7421076560682015991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &8652999232090316193
 GameObject:
   m_ObjectHideFlags: 0
@@ -1068,15 +1084,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21c8bd050f24da54285f8a3987ee6253, type: 3}
---- !u!4 &2202557115962568990 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5338991494728519494, guid: 21c8bd050f24da54285f8a3987ee6253,
-    type: 3}
-  m_PrefabInstance: {fileID: 6090808969810755160}
-  m_PrefabAsset: {fileID: 0}
 --- !u!198 &2436941833237275632 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 8455270613747015080, guid: 21c8bd050f24da54285f8a3987ee6253,
+    type: 3}
+  m_PrefabInstance: {fileID: 6090808969810755160}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2202557115962568990 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5338991494728519494, guid: 21c8bd050f24da54285f8a3987ee6253,
     type: 3}
   m_PrefabInstance: {fileID: 6090808969810755160}
   m_PrefabAsset: {fileID: 0}

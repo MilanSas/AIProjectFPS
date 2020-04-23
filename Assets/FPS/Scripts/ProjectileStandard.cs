@@ -51,7 +51,7 @@ public class ProjectileStandard : MonoBehaviour
     float m_ShootTime;
     Vector3 m_TrajectoryCorrectionVector;
     Vector3 m_ConsumedTrajectoryCorrectionVector;
-    List<Collider> m_IgnoredColliders;
+    //List<Collider> m_IgnoredColliders;
     private TargetHitboxScript target;
     private bool _isMiss = false;
 
@@ -72,40 +72,40 @@ public class ProjectileStandard : MonoBehaviour
         m_ShootTime = Time.time;
         m_LastRootPosition = root.position;
         m_Velocity = transform.forward * speed;
-        m_IgnoredColliders = new List<Collider>();
+        //m_IgnoredColliders = new List<Collider>();
         transform.position += m_ProjectileBase.inheritedMuzzleVelocity * Time.deltaTime;
 
         // Ignore colliders of owner
-        Collider[] ownerColliders = m_ProjectileBase.owner.GetComponentsInChildren<Collider>();
-        m_IgnoredColliders.AddRange(ownerColliders);
+        //Collider[] ownerColliders = m_ProjectileBase.owner.GetComponentsInChildren<Collider>();
+        //m_IgnoredColliders.AddRange(ownerColliders);
 
         // Handle case of player shooting (make projectiles not go through walls, and remember center-of-screen trajectory)
-        PlayerWeaponsManager playerWeaponsManager = m_ProjectileBase.owner.GetComponent<PlayerWeaponsManager>();
-        if(playerWeaponsManager)
-        {
-            m_HasTrajectoryOverride = true;
+        //PlayerWeaponsManager playerWeaponsManager = m_ProjectileBase.owner.GetComponent<PlayerWeaponsManager>();
+        //if(playerWeaponsManager)
+        //{
+        //    m_HasTrajectoryOverride = true;
 
-            Vector3 cameraToMuzzle = (m_ProjectileBase.initialPosition - playerWeaponsManager.weaponCamera.transform.position);
+        //    Vector3 cameraToMuzzle = (m_ProjectileBase.initialPosition - playerWeaponsManager.weaponCamera.transform.position);
 
-            m_TrajectoryCorrectionVector = Vector3.ProjectOnPlane(-cameraToMuzzle, playerWeaponsManager.weaponCamera.transform.forward);
-            if (trajectoryCorrectionDistance == 0)
-            {
-                transform.position += m_TrajectoryCorrectionVector;
-                m_ConsumedTrajectoryCorrectionVector = m_TrajectoryCorrectionVector;
-            }
-            else if (trajectoryCorrectionDistance < 0)
-            {
-                m_HasTrajectoryOverride = false;
-            }
+        //    m_TrajectoryCorrectionVector = Vector3.ProjectOnPlane(-cameraToMuzzle, playerWeaponsManager.weaponCamera.transform.forward);
+        //    if (trajectoryCorrectionDistance == 0)
+        //    {
+        //        transform.position += m_TrajectoryCorrectionVector;
+        //        m_ConsumedTrajectoryCorrectionVector = m_TrajectoryCorrectionVector;
+        //    }
+        //    else if (trajectoryCorrectionDistance < 0)
+        //    {
+        //        m_HasTrajectoryOverride = false;
+        //    }
             
-            if (Physics.Raycast(playerWeaponsManager.weaponCamera.transform.position, cameraToMuzzle.normalized, out RaycastHit hit, cameraToMuzzle.magnitude, hittableLayers, k_TriggerInteraction))
-            {
-                if (IsHitValid(hit))
-                {
-                    OnHit(hit.point, hit.normal, hit.collider);
-                }
-            }
-        }
+        //    if (Physics.Raycast(playerWeaponsManager.weaponCamera.transform.position, cameraToMuzzle.normalized, out RaycastHit hit, cameraToMuzzle.magnitude, hittableLayers, k_TriggerInteraction))
+        //    {
+        //        if (IsHitValid(hit))
+        //        {
+        //            OnHit(hit.point, hit.normal, hit.collider);
+        //        }
+        //    }
+        //}
     }
 
     void Update()
@@ -204,25 +204,38 @@ public class ProjectileStandard : MonoBehaviour
         }
 
         // ignore hits with specific ignored colliders (self colliders, by default)
-        if (m_IgnoredColliders.Contains(hit.collider))
-        {
-            return false;
-        }
+        //if (m_IgnoredColliders.Contains(hit.collider))
+        //{
+        //    return false;
+        //}
 
         return true;
     }
 
     void OnHit(Vector3 point, Vector3 normal, Collider collider)
-    { 
+    {
+
+        Debug.Log("Point " + point);
+
+        GunAgent gunAgent = GameObject.Find("Weapon_LauncherAgent").GetComponent <GunAgent>();
+
+
+
+        if (gunAgent)
+        {
+            gunAgent.UpdateHit(point);
+        }
+
+
         // damage
-        if (areaOfDamage)
+        else if (areaOfDamage)
         {
             // area damage
             areaOfDamage.InflictDamageInArea(damage, point, hittableLayers, k_TriggerInteraction, m_ProjectileBase.owner);
         }
         else
         {
-            // point damage
+            //point damage
             CylinderHitboxScript cylinder = collider.GetComponent<CylinderHitboxScript>();
 
             if (cylinder)
