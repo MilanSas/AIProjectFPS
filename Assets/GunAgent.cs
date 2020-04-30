@@ -15,6 +15,7 @@ public class GunAgent : Agent
     bool isShooting;
     bool shot;
     Vector3? pHit;
+    Vector3 Projectile;
 
 
     // Start is called before the first frame update
@@ -27,6 +28,7 @@ public class GunAgent : Agent
         projectileDistance = int.MaxValue;
         isShooting = false;
         shot = false;
+        Projectile = this.transform.position;
     }
     public void UpdateHit(Vector3 hit)
     {
@@ -42,6 +44,8 @@ public class GunAgent : Agent
         AddVectorObs(relativePosition.y);
         //AddVectorObs(m_Euler.x);
         //AddVectorObs(m_Euler.y);
+        //AddVectorObs(Projectile);
+        //AddVectorObs(shot);
         AddVectorObs(this.transform.rotation.eulerAngles / 180.0f - Vector3.one);
     }
 
@@ -62,7 +66,12 @@ public class GunAgent : Agent
         // Get the action index for jumping
         int shoot = Mathf.FloorToInt(vectorAction[1]);
 
+        var clones = GameObject.FindGameObjectsWithTag("projectile");
 
+        if (clones.Length > 0)
+        {
+            Projectile = clones[0].transform.position;
+        }
         //Debug.Log("shoot: " + shoot);
 
         // Look up the index in the movement action list:
@@ -72,7 +81,22 @@ public class GunAgent : Agent
         if (movement == 4) { m_Euler.y += 0.5f; }
         // Look up the index in the jump action list:
         //if (shoot == 0) { /*isShooting = false; */ if (shot) { SetActionMask(new int[] { 1, 2, 3, 4 }); SetActionMask(1, 1);}}
-        if (shoot == 1) {shot = true;}
+        if (shoot == 1 && !shot)
+        {
+            this.m_WeaponController.HandleShootInputs(true, true, false);
+            AddReward(10.0f);
+            SetActionMask(1, 1);
+            shot = true;
+        }
+        else if (shoot == 1 && shot)
+        {
+            this.m_WeaponController.HandleShootInputs(true, true, false);
+            AddReward(-1f);
+        }
+        else
+        {
+            this.m_WeaponController.HandleShootInputs(false, false, true);
+        }
 
         this.transform.localEulerAngles = m_Euler;
 
@@ -104,21 +128,13 @@ public class GunAgent : Agent
 
         if(pHit != null)
         {
+            Projectile = (Vector3)pHit;
             projectileDistance = Vector3.Distance(m_Target.transform.position, (Vector3)pHit
         );
         }
 
-        Debug.Log("Is Shooting: " + shot);
 
-        if (shot)
-        {
-            this.m_WeaponController.HandleShootInputs(true, true, false);
-        }
-
-        else
-        {
-            this.m_WeaponController.HandleShootInputs(false, false, true);
-        }
+  
 
         //else{
         //    this.m_WeaponController.HandleShootInputs(false, false, true);
@@ -127,21 +143,21 @@ public class GunAgent : Agent
         //rewards
 
 
-        if (projectileDistance < 2)
+        if (projectileDistance < 2 && pHit != null)
         {
             AddReward(100.0f);
             Done();
         }
 
-        else if(distanceToTarget >= 2 && shot == true)
+        else if(projectileDistance >= 2 && pHit != null)
         {
-            AddReward(-10.0f);
-            shot = false;
+            AddReward(-projectileDistance);
+            pHit = null;
         }
 
         if (distanceToTarget < previousDistance)
         {
-            AddReward(0.01f);
+            AddReward(0.1f);
             previousDistance = distanceToTarget;
         }
         //Out of bounds
@@ -174,6 +190,7 @@ public class GunAgent : Agent
         {
             Destroy(clone);
         }
+        Projectile = this.transform.position;
     }
 
     public override float[] Heuristic()
