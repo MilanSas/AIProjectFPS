@@ -61,10 +61,11 @@ public class ProjectileStandard : MonoBehaviour
     {
         m_ProjectileBase = GetComponent<ProjectileBase>();
         DebugUtility.HandleErrorIfNullGetComponent<ProjectileBase, ProjectileStandard>(m_ProjectileBase, this, gameObject);
-
+       
         m_ProjectileBase.onShoot += OnShoot;
 
         Destroy(gameObject, maxLifeTime);
+     
     }
 
     void OnShoot()
@@ -107,7 +108,16 @@ public class ProjectileStandard : MonoBehaviour
         //    }
         //}
     }
-
+    private void Start()
+    {
+        GunAgent gunAgent = m_ProjectileBase.owner.GetComponent<GunAgent>();
+        gunAgent.addProjectile(this);
+    }
+    private void OnDestroy()
+    {
+        GunAgent gunAgent = m_ProjectileBase.owner.GetComponent<GunAgent>();
+        gunAgent.removeProjectile(this);
+    }
     void Update()
     {
         // Move
@@ -217,7 +227,7 @@ public class ProjectileStandard : MonoBehaviour
 
         Debug.Log("Point " + point);
 
-        GunAgent gunAgent = GameObject.Find("Weapon_LauncherAgent").GetComponent <GunAgent>();
+        GunAgent gunAgent = m_ProjectileBase.owner.GetComponent<GunAgent>();
 
 
 

@@ -228,6 +228,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2967647576389188408, guid: e19dc93b248981e4bae243db0a8290a9,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3265718569471807551, guid: e19dc93b248981e4bae243db0a8290a9,
         type: 3}
       propertyPath: m_Target
@@ -242,8 +247,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 2eaaf85dec2eab048b62631e937618a6,
-        type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 5826026373447907951, guid: e19dc93b248981e4bae243db0a8290a9,
         type: 3}
       propertyPath: m_BrainParameters.vectorActionSpaceType
@@ -263,6 +267,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Weapon_LauncherAgent
+      objectReference: {fileID: 0}
+    - target: {fileID: 7660685979840269767, guid: e19dc93b248981e4bae243db0a8290a9,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8394359456360085367, guid: e19dc93b248981e4bae243db0a8290a9,
         type: 3}
