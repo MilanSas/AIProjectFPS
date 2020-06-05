@@ -264,6 +264,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Weapon_LauncherAgent
       objectReference: {fileID: 0}
+    - target: {fileID: 7660685979840269767, guid: e19dc93b248981e4bae243db0a8290a9,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8394359456360085367, guid: e19dc93b248981e4bae243db0a8290a9,
         type: 3}
       propertyPath: delayBetweenShots
@@ -279,6 +284,31 @@ PrefabInstance:
         type: 3}
       propertyPath: shootType
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8394359456360085367, guid: e19dc93b248981e4bae243db0a8290a9,
+        type: 3}
+      propertyPath: shootSFX
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8394359456360085367, guid: e19dc93b248981e4bae243db0a8290a9,
+        type: 3}
+      propertyPath: changeWeaponSFX
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8458899363909202052, guid: e19dc93b248981e4bae243db0a8290a9,
+        type: 3}
+      propertyPath: coolingCellsSound
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9211211582582012347, guid: e19dc93b248981e4bae243db0a8290a9,
+        type: 3}
+      propertyPath: chargeSound
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9211211582582012347, guid: e19dc93b248981e4bae243db0a8290a9,
+        type: 3}
+      propertyPath: loopChargeWeaponSFX
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e19dc93b248981e4bae243db0a8290a9, type: 3}
