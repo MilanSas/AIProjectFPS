@@ -103,7 +103,6 @@ public class GunAgent : Agent
             ProjectileLocation = (Vector3)pHit;
             projectileDistance = Vector3.Distance(m_Target.transform.position, (Vector3)pHit);
             shot = false;
-            pHit = null;
         }
 
         //rewards
@@ -118,6 +117,7 @@ public class GunAgent : Agent
         else if (projectileDistance >= 2 && pHit != null)
         {
             AddReward(-projectileDistance);
+            pHit = null;
         }
 
         if (distanceToTarget < previousDistance)
