@@ -33,7 +33,6 @@ public class GunAgent : Agent
         projectileDistance = int.MaxValue;
         ChargeAmount = 0;
         isCharging = false;
-        isShooting = false;
         shot = false;
         ProjectileLocation = this.transform.position;
         projectiles = new List<ProjectileStandard>();
@@ -60,86 +59,16 @@ public class GunAgent : Agent
         AddVectorObs(currentPosition.y);
         AddVectorObs(relativePosition.x);
         AddVectorObs(relativePosition.y);
-        AddVectorObs(ProjectileLocation);
-        AddVectorObs(ProjectileTrajectory);
         AddVectorObs(ChargeAmount);
-        //AddVectorObs(m_Euler.x);
-        //AddVectorObs(m_Euler.y);
-        //AddVectorObs(Projectile);
-        //AddVectorObs(shot);
         AddVectorObs(this.transform.rotation.eulerAngles / 180.0f - Vector3.one);
     }
-
-    public override void AgentAction(float[] vectorAction)
+    void FixedUpdate()
     {
-        //base.AgentAction(vectorAction);
-        //this.transform.Rotate(new Vector3(vectorAction[1], vectorAction[0], 0));
-        //Continous Space Type
-        //m_Euler.x = (m_Euler.x + Mathf.Clamp(vectorAction[1], -1, 1)) % 360;
-        //m_Euler.y = (m_Euler.y - Mathf.Clamp(vectorAction[0], -1, 1)) % 360;
-
-        //this.transform.localEulerAngles = m_Euler;
-        //// m_WeaponController.HandleShootInputs(true, true, false);
-
-
-        //Discrete Space Type
-        int movement = Mathf.FloorToInt(vectorAction[0]);
-        // Get the action index for jumping
-        int shoot = Mathf.FloorToInt(vectorAction[1]);
-
-        if (isCharging)
+        if (!shot)
         {
-            ChargeAmount += 1;
-            AddReward(0.1f);
+            RequestDecision();
         }
 
-
-        if (projectiles.Count > 0)
-        {
-            ProjectileLocation = projectiles[0].transform.position;
-            ProjectileTrajectory = projectiles[0].m_Velocity;
-        }
-
-        else { ProjectileLocation = this.transform.position;
-            ProjectileTrajectory = Vector3.zero;
-        }
-
-        Debug.Log("Location: " + ProjectileLocation);
-        Debug.Log("Speed: " + ProjectileTrajectory);
-        Debug.Log("ChargeTime " + ChargeAmount);
-        // Look up the index in the movement action list:
-        if (movement == 1) { m_Euler.x += -0.5f; }
-        if (movement == 2) { m_Euler.x += 0.5f; }
-        if (movement == 3) { m_Euler.y += -0.5f; }
-        if (movement == 4) { m_Euler.y += 0.5f; }
-        // Look up the index in the jump action list:
-        //if (shoot == 0) { /*isShooting = false; */ if (shot) { SetActionMask(new int[] { 1, 2, 3, 4 }); SetActionMask(1, 1);}}
-        if (shoot == 1 && !shot)
-        {
-            this.m_WeaponController.HandleShootInputs(true, true, false);
-            isCharging = true;
-        }
-        else if (shoot == 1 && shot)
-        {
-            this.m_WeaponController.HandleShootInputs(true, true, false);
-            isCharging = true;
-            AddReward(-1f);
-        }
-        else if (shoot == 0 && isCharging)
-        {
-            this.m_WeaponController.HandleShootInputs(false, false, true);
-            shot = true;
-            ChargeAmount = 0;
-            isCharging = false;
-        }
-
-        else if (shoot == 0 && !isCharging)
-        {
-            this.m_WeaponController.HandleShootInputs(false, false, true);
-            ChargeAmount = 0;
-            isCharging = false;
-        }
-    
 
         this.transform.localEulerAngles = m_Euler;
 
@@ -148,7 +77,7 @@ public class GunAgent : Agent
         // Does the ray intersect any objects excluding the player layer
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
         {
-            
+
             Collider objectHit = hit.collider;
             currentPosition = hit.point;
             CylinderHitboxScript cylinder = objectHit.GetComponent<CylinderHitboxScript>();
@@ -160,29 +89,23 @@ public class GunAgent : Agent
 
             else
             {
-               // m_Target.UpdateScore(11);
+                // m_Target.UpdateScore(11);
             }
 
             relativePosition = m_Target.transform.position - hit.point;
         }
 
-        float distanceToTarget = Vector3.Distance(m_Target.transform.position,currentPosition
+        float distanceToTarget = Vector3.Distance(m_Target.transform.position, currentPosition
         );
 
-        if(pHit != null)
+        if (pHit != null)
         {
             ProjectileLocation = (Vector3)pHit;
-            projectileDistance = Vector3.Distance(m_Target.transform.position, (Vector3)pHit
-        );
+            projectileDistance = Vector3.Distance(m_Target.transform.position, (Vector3)pHit);
+            shot = false;
+            pHit = null;
         }
 
-
-  
-
-        //else{
-        //    this.m_WeaponController.HandleShootInputs(false, false, true);
-        //}
-       
         //rewards
 
 
@@ -192,10 +115,9 @@ public class GunAgent : Agent
             Done();
         }
 
-        else if(projectileDistance >= 2 && pHit != null)
+        else if (projectileDistance >= 2 && pHit != null)
         {
             AddReward(-projectileDistance);
-            pHit = null;
         }
 
         if (distanceToTarget < previousDistance)
@@ -217,6 +139,46 @@ public class GunAgent : Agent
         }
         // Time penalty
         AddReward(-0.005f);
+    }
+
+
+    public override void AgentAction(float[] vectorAction)
+    {
+        //Discrete Space Type
+        int movement = Mathf.FloorToInt(vectorAction[0]);
+        // Get the action index for jumping
+        int shoot = Mathf.FloorToInt(vectorAction[1]);
+
+        if (isCharging)
+        {
+            ChargeAmount += 1;
+            AddReward(0.1f);
+        }
+        // Look up the index in the movement action list:
+        if (movement == 1) { m_Euler.x += -0.5f; }
+        if (movement == 2) { m_Euler.x += 0.5f; }
+        if (movement == 3) { m_Euler.y += -0.5f; }
+        if (movement == 4) { m_Euler.y += 0.5f; }
+        // Look up the index in the jump action list:
+        //if (shoot == 0) { /*isShooting = false; */ if (shot) { SetActionMask(new int[] { 1, 2, 3, 4 }); SetActionMask(1, 1);}}
+        if (shoot == 1 && !shot)
+        {
+            this.m_WeaponController.HandleShootInputs(true, true, false);
+            isCharging = true;
+        }
+
+        else if (shoot == 0 && isCharging)
+        {
+            this.m_WeaponController.HandleShootInputs(false, false, true);
+            ChargeAmount = 0;
+            shot = true;
+            isCharging = false;
+        }
+
+        else if (shoot == 0 && !isCharging)
+        {
+            this.m_WeaponController.HandleShootInputs(false, false, true);
+        }
 
     }
     public override void AgentReset()
