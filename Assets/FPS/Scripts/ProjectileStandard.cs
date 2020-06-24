@@ -108,16 +108,7 @@ public class ProjectileStandard : MonoBehaviour
         //    }
         //}
     }
-    private void Start()
-    {
-        GunAgent gunAgent = m_ProjectileBase.owner.GetComponent<GunAgent>();
-        gunAgent.addProjectile(this);
-    }
-    private void OnDestroy()
-    {
-        GunAgent gunAgent = m_ProjectileBase.owner.GetComponent<GunAgent>();
-        gunAgent.removeProjectile(this);
-    }
+
     void Update()
     {
         // Move
@@ -225,7 +216,7 @@ public class ProjectileStandard : MonoBehaviour
     void OnHit(Vector3 point, Vector3 normal, Collider collider)
     {
 
-        Debug.Log("Point " + point);
+        //Debug.Log("Point " + point);
 
         GunAgent gunAgent = m_ProjectileBase.owner.GetComponent<GunAgent>();
 

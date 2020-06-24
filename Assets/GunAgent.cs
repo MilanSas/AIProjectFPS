@@ -11,15 +11,14 @@ public class GunAgent : Agent
     Vector3 relativePosition;
     Vector3 currentPosition;
     int ChargeAmount = 0;
+    float totalScore = 0;
     float previousDistance;
     float projectileDistance;
     bool isCharging;
-    bool isShooting;
     bool shot;
+    RaycastHit hit;
     List<ProjectileStandard> projectiles;
     Vector3? pHit;
-    Vector3 ProjectileLocation;
-    Vector3 ProjectileTrajectory;
 
     // Start is called before the first frame update
     private void Start()
@@ -30,27 +29,17 @@ public class GunAgent : Agent
         DebugUtility.HandleErrorIfNullGetComponent<PlayerWeaponsManager, WeaponController>(m_WeaponController, this, gameObject);
         m_Euler = this.transform.localEulerAngles;
         previousDistance = int.MaxValue;
-        projectileDistance = int.MaxValue;
         ChargeAmount = 0;
+        totalScore = 0;
         isCharging = false;
         shot = false;
-        ProjectileLocation = this.transform.position;
         projectiles = new List<ProjectileStandard>();
     }
-    public void UpdateHit(Vector3 hit)
+    public void UpdateHit(Vector3 hit2)
     {
-        pHit = hit;
+        pHit = hit2;
     }
 
-    public void addProjectile(ProjectileStandard projectile)
-    {
-        projectiles.Add(projectile);
-    }
-
-    public void removeProjectile(ProjectileStandard projectile)
-    {
-        projectiles.Remove(projectile);
-    }
     public override void CollectObservations()
     {
         AddVectorObs(m_Target.transform.position.x);
@@ -64,6 +53,7 @@ public class GunAgent : Agent
     }
     void FixedUpdate()
     {
+        Debug.Log("Total Score: " + totalScore);
         if (!shot)
         {
             RequestDecision();
@@ -71,8 +61,6 @@ public class GunAgent : Agent
 
 
         this.transform.localEulerAngles = m_Euler;
-
-        RaycastHit hit;
         Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 50, Color.green);
         // Does the ray intersect any objects excluding the player layer
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
@@ -95,15 +83,10 @@ public class GunAgent : Agent
             relativePosition = m_Target.transform.position - hit.point;
         }
 
-        float distanceToTarget = Vector3.Distance(m_Target.transform.position, currentPosition
-        );
-
-        if (pHit != null)
-        {
-            ProjectileLocation = (Vector3)pHit;
-            projectileDistance = Vector3.Distance(m_Target.transform.position, (Vector3)pHit);
-            shot = false;
-        }
+        float distanceToTarget = Vector3.Distance(m_Target.transform.position, currentPosition);
+        Debug.Log("Distance to target" + distanceToTarget);
+        Debug.Log("Previous Distance" + previousDistance);
+        Debug.Log("Projectile Distance" + projectileDistance);
 
         //rewards
 
@@ -111,17 +94,22 @@ public class GunAgent : Agent
         if (projectileDistance < 2 && pHit != null)
         {
             AddReward(100.0f);
+            totalScore += 100;
             Done();
+           
         }
 
         else if (projectileDistance >= 2 && pHit != null)
         {
             AddReward(-projectileDistance);
-            pHit = null;
+            totalScore -= projectileDistance;
+            Done();
         }
 
         if (distanceToTarget < previousDistance)
         {
+            Debug.Log("Closer");
+            totalScore += 0.1f;
             AddReward(0.1f);
             previousDistance = distanceToTarget;
         }
@@ -152,7 +140,6 @@ public class GunAgent : Agent
         if (isCharging)
         {
             ChargeAmount += 1;
-            AddReward(0.1f);
         }
         // Look up the index in the movement action list:
         if (movement == 1) { m_Euler.x += -0.5f; }
@@ -160,17 +147,22 @@ public class GunAgent : Agent
         if (movement == 3) { m_Euler.y += -0.5f; }
         if (movement == 4) { m_Euler.y += 0.5f; }
         // Look up the index in the jump action list:
-        //if (shoot == 0) { /*isShooting = false; */ if (shot) { SetActionMask(new int[] { 1, 2, 3, 4 }); SetActionMask(1, 1);}}
+        
+
         if (shoot == 1 && !shot)
         {
             this.m_WeaponController.HandleShootInputs(true, true, false);
             isCharging = true;
+            ChargeAmount += 1;
         }
 
         else if (shoot == 0 && isCharging)
         {
+            Debug.Log("shot");
             this.m_WeaponController.HandleShootInputs(false, false, true);
             ChargeAmount = 0;
+            totalScore += 2.0f;
+            AddReward(2.0f);
             shot = true;
             isCharging = false;
         }
@@ -183,22 +175,16 @@ public class GunAgent : Agent
     }
     public override void AgentReset()
     {
+        totalScore = 0;
         m_Euler.x = (0) % 360;
         m_Euler.y = (0) % 360;
         pHit = null;
         shot = false;
         isCharging = false;
-        isShooting = false;
-        ChargeAmount = 0; 
+        ChargeAmount = 0;
+        previousDistance = int.MaxValue;
         m_Target.SetPosition(new Vector3(Random.Range(-25.0f, 25.0f), 10.32f, 25));
         m_Target.ResetScore();
-        projectileDistance = int.MaxValue;
-        foreach (var projectile in projectiles)
-        {
-            Destroy(projectile.gameObject);
-        }
-        ProjectileLocation = this.transform.position;
-        ProjectileTrajectory = Vector3.zero;
     }
 
     public override float[] Heuristic()
