@@ -12,6 +12,7 @@ public class GunAgent : Agent
     Vector3 currentPosition;
     float previousDistance;
     float projectileDistance;
+    float distanceToTarget;
     bool isShooting;
     bool shot;
     Vector3? pHit;
@@ -34,6 +35,185 @@ public class GunAgent : Agent
     {
         pHit = hit;
     }
+
+
+    void FixedUpdate()
+    {
+
+        if (!shot)
+        {
+            RequestDecision();
+        }
+
+        var clones = GameObject.FindGameObjectsWithTag("projectile");
+
+        if (clones.Length > 0)
+        {
+            Projectile = clones[0].transform.position;
+        }
+
+        this.transform.localEulerAngles = m_Euler;
+        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 50, Color.green);
+        // Does the ray intersect any objects excluding the player layer
+
+        if (pHit == null)
+        {
+
+            RaycastHit hit;
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 50, Color.green);
+            // Does the ray intersect any objects excluding the player layer
+            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
+            {
+
+                Collider objectHit = hit.collider;
+                currentPosition = hit.point;
+                CylinderHitboxScript cylinder = objectHit.GetComponent<CylinderHitboxScript>();
+
+                if (cylinder)
+                {
+                    //cylinder.OnHit();
+                }
+
+                else
+                {
+                    // m_Target.UpdateScore(11);
+                }
+
+                relativePosition = m_Target.transform.position - hit.point;
+            }
+
+            distanceToTarget = Vector3.Distance(m_Target.transform.position, currentPosition
+            );
+        }
+
+        if (pHit != null)
+        {
+            Projectile = (Vector3)pHit;
+            projectileDistance = Vector3.Distance(m_Target.transform.position, (Vector3)pHit
+        );
+
+        }
+
+
+
+
+
+        //rewards
+
+
+        if (projectileDistance < 2 && pHit != null)
+        {
+            AddReward(100.0f);
+            Done();
+        }
+
+        else if (projectileDistance >= 2 && pHit != null)
+        {
+            AddReward(-projectileDistance);
+            Done();
+        }
+
+        if (distanceToTarget < previousDistance)
+        {
+            AddReward(0.1f);
+            previousDistance = distanceToTarget;
+        }
+        //Out of bounds
+        if (m_Euler.y > 80 || m_Euler.y < -80)
+        {
+            AddReward(-30.0f);
+            Done();
+        }
+
+        if (m_Euler.x > 80 || m_Euler.x < -80)
+        {
+            AddReward(-30.0f);
+            Done();
+        }
+        // Time penalty
+        AddReward(-0.005f);
+
+    }
+
+        //    if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
+        //    {
+
+        //        Collider objectHit = hit.collider;
+        //        currentPosition = hit.point;
+
+        //        if (!objectHit)
+        //        {
+        //            AddReward(-30.0f);
+        //            Done();
+        //        }
+        //        CylinderHitboxScript cylinder = objectHit.GetComponent<CylinderHitboxScript>();
+
+        //        if (cylinder)
+        //        {
+        //            //cylinder.OnHit();
+        //        }
+
+        //        else
+        //        {
+        //            // m_Target.UpdateScore(11);
+        //        }
+
+        //        relativePosition = m_Target.transform.position - hit.point;
+        //    }
+        //}
+        //if (pHit != null)
+        //{
+        //    projectileDistance = Vector3.Distance(m_Target.transform.position, (Vector3)pHit);
+
+        //}
+        //distanceToTarget = Vector3.Distance(m_Target.transform.position, currentPosition);
+        //Debug.Log("Distance to target" + distanceToTarget);
+        //Debug.Log("Previous Distance" + previousDistance);
+        //Debug.Log("Projectile Distance" + projectileDistance);
+
+        ////rewards
+
+
+        //if (projectileDistance < 2 && pHit != null)
+        //{
+        //    AddReward(100.0f);
+        //    totalScore += 100;
+        //    Debug.Log("Bullseye");
+        //    Done();
+
+        //}
+
+        //else if (projectileDistance >= 2 && pHit != null)
+        //{
+        //    Debug.Log("Miss");
+        //    AddReward(-projectileDistance);
+        //    totalScore -= projectileDistance;
+        //    Done();
+        //}
+
+        //if (distanceToTarget < previousDistance)
+        //{
+        //    Debug.Log("Closer");
+        //    totalScore += 0.1f;
+        //    AddReward(0.1f);
+        //    previousDistance = distanceToTarget;
+        //}
+        ////Out of bounds
+        //if (m_Euler.y > 80 || m_Euler.y < -80)
+        //{
+        //    AddReward(-30.0f);
+        //    Done();
+        //}
+
+        //if (m_Euler.x > 0 || m_Euler.x < -80)
+        //{
+        //    AddReward(-30.0f);
+        //    Done();
+        //}
+        //// Time penalty
+        //AddReward(-0.005f);
+    
+
     public override void CollectObservations()
     {
         AddVectorObs(m_Target.transform.position.x);
@@ -65,13 +245,6 @@ public class GunAgent : Agent
         int movement = Mathf.FloorToInt(vectorAction[0]);
         // Get the action index for jumping
         int shoot = Mathf.FloorToInt(vectorAction[1]);
-
-        var clones = GameObject.FindGameObjectsWithTag("projectile");
-
-        if (clones.Length > 0)
-        {
-            Projectile = clones[0].transform.position;
-        }
         //Debug.Log("shoot: " + shoot);
 
         // Look up the index in the movement action list:
@@ -86,102 +259,27 @@ public class GunAgent : Agent
             this.m_WeaponController.HandleShootInputs(true, true, false);
             AddReward(10.0f);
             SetActionMask(1, 1);
-            shot = true;
+            isShooting = true;
         }
-        else if (shoot == 1 && shot)
-        {
-            this.m_WeaponController.HandleShootInputs(true, true, false);
-            AddReward(-1f);
-        }
-        else
+
+
+        if (shoot == 0 && isShooting)
         {
             this.m_WeaponController.HandleShootInputs(false, false, true);
+            shot = true;
         }
-
-        this.transform.localEulerAngles = m_Euler;
-
-        RaycastHit hit;
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 50, Color.green);
-        // Does the ray intersect any objects excluding the player layer
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
-        {
-            
-            Collider objectHit = hit.collider;
-            currentPosition = hit.point;
-            CylinderHitboxScript cylinder = objectHit.GetComponent<CylinderHitboxScript>();
-
-            if (cylinder)
-            {
-                //cylinder.OnHit();
-            }
-
-            else
-            {
-               // m_Target.UpdateScore(11);
-            }
-
-            relativePosition = m_Target.transform.position - hit.point;
-        }
-
-        float distanceToTarget = Vector3.Distance(m_Target.transform.position,currentPosition
-        );
-
-        if(pHit != null)
-        {
-            Projectile = (Vector3)pHit;
-            projectileDistance = Vector3.Distance(m_Target.transform.position, (Vector3)pHit
-        );
-        }
-
-
-  
-
-        //else{
-        //    this.m_WeaponController.HandleShootInputs(false, false, true);
-        //}
-        Debug.Log(distanceToTarget);
-        //rewards
-
-
-        if (projectileDistance < 2 && pHit != null)
-        {
-            AddReward(100.0f);
-            Done();
-        }
-
-        else if(projectileDistance >= 2 && pHit != null)
-        {
-            AddReward(-projectileDistance);
-            pHit = null;
-        }
-
-        if (distanceToTarget < previousDistance)
-        {
-            AddReward(0.1f);
-            previousDistance = distanceToTarget;
-        }
-        //Out of bounds
-        if (m_Euler.y > 80 || m_Euler.y < -80)
-        {
-            AddReward(-30.0f);
-            Done();
-        }
-
-        if (m_Euler.x > 80 || m_Euler.x < -80)
-        {
-            AddReward(-30.0f);
-            Done();
-        }
-        // Time penalty
-        AddReward(-0.005f);
-
     }
+
+      
+
     public override void AgentReset()
     {
         m_Euler.x = (0) % 360;
         m_Euler.y = (0) % 360;
         pHit = null;
         shot = false;
+        isShooting = false;
+        distanceToTarget = int.MaxValue;
         m_Target.SetPosition(new Vector3(Random.Range(-25.0f, 25.0f), 10.32f, 25));
         m_Target.ResetScore();
         var clones = GameObject.FindGameObjectsWithTag("projectile");
