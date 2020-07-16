@@ -280,7 +280,8 @@ PrefabInstance:
       propertyPath: shootType
       value: 2
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 411140614, guid: e19dc93b248981e4bae243db0a8290a9, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e19dc93b248981e4bae243db0a8290a9, type: 3}
 --- !u!4 &1146676878 stripped
 Transform:
